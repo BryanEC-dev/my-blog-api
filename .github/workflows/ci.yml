@@ -1,0 +1,40 @@
+name: CI
+run-name: CI Pipeline
+on:
+  pull_request:
+    branches:
+      - dev
+jobs:
+  build:
+    runs-on: ubuntu-latest # cambiar a versión especifica
+
+    steps:
+      - uses: actions/checkout@v3 # copiar el repositorio
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'v22.20.0' # especificar la versión de Node.js por variables
+          cache: 'npm'
+      
+      - name: Install dependencies (Strict)
+        run: npm ci
+
+      - name: Security Audit
+        run: npm audit --audit-level=High
+      
+      - name: Lint and format check
+        run: |
+          npm run check-format
+          npm run lint
+      
+      - name: Run unit Tests
+        run: npm test
+      
+      - name: Secret Scanning
+        uses: trufflesecurity/trufflehog@v3.92.5
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+      
