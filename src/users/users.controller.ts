@@ -1,5 +1,4 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import e from 'express';
 
 @Controller('users')
 export class UsersController {
